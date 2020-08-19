@@ -1,0 +1,308 @@
+openapi: "3.0.0"
+info:
+  version: "1.0.0"
+  title: "api-taoBaoWeb-v1"
+  description: "This API provides operation for users"
+
+paths:
+
+  /user:
+    post:
+      summary: Create a user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        "200":
+          description: user created successfully
+          headers:
+            Locations:
+              schema:
+                type: string
+                description: The URL of created user
+                example: "/user/1"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUserResponse'
+        
+        "409":
+          description: user already exist
+          
+  /user/{userLoginName}:      
+    get:
+      summary: view order records
+      parameters: 
+      - name: userLoginName
+        in: path
+        description: Whole order records of user
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Get the records of user's orders
+          headers:
+            Locations:
+              schema:
+                type: array
+                description: The URL of order records
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateOrderRecordsResponse'
+        "404":
+          description: user dose not exist
+        
+        
+  /product/{productId}:
+    get:
+      summary: get info from a product
+      parameters: 
+      - name: productId
+        in: path
+        required: true
+        description: search product by product id 
+        schema:
+          type: string
+      responses:
+        "200":
+          description: This is the details
+          headers:
+            Location:
+              schema:
+                type: string
+                description: The URL of product exist
+                example: "product/1"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProductResponse'
+        "404":
+          description: product does not exist
+  
+  /order:
+    post:
+      summary: Create an order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        "200":
+          description: order created successfully
+          headers:
+            Location:
+              schema:
+                type: string
+                description: The URL of created order
+                example: "order/1"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateOrderResponse'
+        "400":
+          description: product dose not have enough number
+                
+  /order/{orderId}:
+    get:
+      summary: Get all parcel id by orderId
+      parameters: 
+      - name: orderId
+        in: path
+        required: true
+        description: orderId
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: parcels
+          headers:
+            Locations:
+              schema:
+                type: array
+                description: The URL of parcels
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateParcelResponse'
+                
+        "404":
+          description: The order id dose not exist
+              
+        
+            
+  /payment:
+    post:
+      summary: Create a payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentRequest'
+      responses:
+        "200":
+          description: paid
+          headers:
+            Location:
+              schema:
+                type: string
+                description: The URL of created payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatePaymentResponse'
+                
+        "400":
+          $ref: '#/components/responses/400'
+          
+  
+  
+         
+components:
+  schemas:
+    
+    CreateUserRequest:
+       type: object
+       properties:
+        userData:
+          $ref: '#/components/schemas/UserData'
+          
+    CreateUserResponse:
+      type: object
+      properties:
+        userData:
+          $ref: '#/components/schemas/UserData'
+          
+    CreateOrderRecordsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/orderData'
+          
+    CreateOrderRequest:
+      type: object
+      properties:
+        orderData:
+          $ref: '#/components/schemas/orderData'
+    
+    CreateOrderResponse:
+      type: object
+      properties:
+        orderData:
+         $ref: '#/components/schemas/orderData'
+         
+    CreatePaymentRequest:
+      type: object
+      properties:
+        paymentData:
+          $ref: '#/components/schemas/paymentData'
+    
+    CreatePaymentResponse:
+      type: object
+      properties:
+        paymentData:
+         $ref: '#/components/schemas/paymentData'
+         
+    CreateProductResponse:
+      type: object
+      properties:
+        productData:
+          $ref: '#/components/schemas/productData'
+          
+    CreateParcelResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/parcelData'
+        
+          
+    UserData:
+      type: object
+      properties:
+        userLoginName:
+          type: string
+          description: username
+        userPassword: 
+          type: string
+          format: password 
+        userName:
+          type: string
+        BOD:
+          type: string
+        Phone:
+          type: integer
+        parcelEmail:
+          type: string
+        billingEmail:
+          type: string
+    
+    productData:
+      type: object
+      properties:
+        productId:
+          type: integer
+        name:
+          type: string
+        price:
+          type: string
+        stock:
+          type: integer
+          description: the number of product left
+      
+    orderData:
+      type: object
+      properties:
+        orderId: 
+          type: integer
+        userDetails: 
+          $ref: '#/components/schemas/UserData'
+        orderState:
+          type: string
+          enum: ['Received','Processing','Shipped']
+        parcelNum:
+          type: integer
+          description: the number of the parcels 
+        allOrderProduct:
+          type: array
+          items: 
+            $ref: '#/components/schemas/orderProduct'
+        orderPrice:
+          type: number
+          description: Total order price
+        parcelData:
+          $ref: '#/components/schemas/parcelData'
+            
+    orderProduct:
+      type: object
+      properties:
+        productName:
+          type: string
+          description: the name 
+        productNum:
+          type: integer
+          description: the number of items that user want to buy
+        
+    parcelData:
+      type: object
+      properties:
+        parcelId:
+          type: integer
+        
+    paymentData:
+      type: object
+      properties:
+        payId:
+          type: integer
+        orderId:
+          type: integer
+        WayToPay:
+          type: string
+          enum: ['Debit','Credit Card']
+
+        
+  responses:
+    "400":
+      description: Bad request
+    
