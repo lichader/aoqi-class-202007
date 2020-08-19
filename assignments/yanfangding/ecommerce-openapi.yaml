@@ -1,0 +1,541 @@
+openapi: "3.0.0"
+
+info:
+  version: "1.0.0"
+  title: "e-commerce-api-v1"
+  description: "This API provide operations for a e-commerce system"
+  
+paths:
+  /users:
+    post:
+      summary: Create a new user account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegisterRequest"
+            example: 
+              data:
+                username: "Emma"
+                password: "emma"
+                firstName: "Emma"
+                lastName: "Ding"
+                dob: "1995-12-24"
+      responses:
+        "200":
+          description: User is created
+          headers:
+            Location: 
+              schema:
+                type: string
+                description: The URI of created user
+                example: "users/1"
+          content:
+            application/json: 
+              schema:
+                $ref: "#/components/schemas/CreateUserResponse"
+        "400":
+          $ref: "#/components/responses/400"
+          
+          
+          
+  /users/{userId}:
+    get:
+      summary: get a user by id
+      parameters:
+        - in: path
+          name: userId  
+          required: true
+          schema:
+            type: integer
+          description: The user ID
+      responses:
+        "200":
+          description: return the user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateUserResponse"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        
+        
+        
+  /userLogin:
+    get:
+      summary: user login
+      parameters:
+        - in: query 
+          name: username   
+          schema:
+            type: string
+          description: The user name
+        - in: query 
+          name: password   
+          required: true
+          schema:
+            type: string
+          description: The user password  
+      responses:
+        "200":
+          description: return the user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateUserResponse"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"  
+          
+
+  
+  
+  /products:
+    get:
+      summary: get all the products from the system that user can view
+      responses:
+        "200":
+          description: a list of products.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductInfo"
+                  
+  /products/{productId}:                
+    get:
+      summary: get a product by id
+      parameters:
+        - in: path
+          name: productId  
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The product ID
+      responses:
+        "200":
+          description: return the product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnProduct"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"              
+      
+      
+    
+  /displayShoppingCart/{userId}:
+    get:
+      summary: display shopping cart for the user
+      parameters:
+        - in: path
+          name: userId  
+          required: true
+          schema:
+            type: integer
+          description: The user ID
+      responses:
+        "200":
+          description: return the shopping cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnShoppingCart"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"    
+  
+  
+  
+  /updateShoppingCart/{userId}:
+    put:
+      summary: update the shopping cart of the user
+      parameters:
+        - in: path
+          name: userId  
+          required: true
+          schema:
+            type: integer
+          description: The user ID
+        - in: query
+          name: productId   
+          required: true
+          schema:
+            type: integer
+          description: The product ID
+        - in: query
+          name: account   
+          required: true
+          schema:
+            type: integer
+          description: The account of product user want to buy
+      responses:
+        "200":
+          description: return the updated shopping cart
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnShoppingCart"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"      
+  
+    
+    
+ 
+  /orders:
+    post:
+      summary: Create a new order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderData"
+            example: 
+              data:
+                productList: [{"productName":"apple","price":2,"inventory":40}] 
+                user: {"userId":234,"username": "Emma", "password": "emma", "firstName": "Emma", "lastName": "Ding", "dob": "1995-12-24"}
+                phoneNumber: 0453672846
+                deliveryAddress: "6 Burke road"
+                billingAddress: "6 Burke road"
+      responses:
+        "200": 
+          description: Order is created
+          headers:
+            Location: 
+              schema:
+                type: string
+                description: The URI of created order
+                example: "orders/1"
+          content:
+            application/json: 
+              schema:
+                $ref: "#/components/schemas/CreateOrderResponse"
+        "400":
+          $ref: "#/components/responses/400"
+    
+    
+    
+  /orders/{userId}:
+    get:
+      summary: get a user by id
+      parameters:
+        - in: path
+          name: userId  
+          required: true
+          schema:
+            type: integer
+          description: The user ID
+      responses:
+        "200":
+          description: return all the orders of the user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateOrderResponse"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+    
+    
+    
+  /parcels:
+    post:
+      summary: Create a new parcel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ParcelData"
+            example: 
+              data:
+                status: "Processing"
+                orderId: 11
+                productList: [{"productName":"apple","price":2,"inventory":40}] 
+      responses:
+        "200": 
+          description: Parcel is created
+          headers:
+            Location: 
+              schema:
+                type: string
+                description: The URI of created parcel
+                example: "parcels/1"
+          content:
+            application/json: 
+              schema:
+                $ref: "#/components/schemas/CreateParcelResponse"
+        "400":
+          $ref: "#/components/responses/400"   
+          
+          
+          
+          
+  /updateParcels/{parcelId}:   
+    put:
+      summary: update the status of the parcel
+      parameters:
+        - in: path
+          name: parcelId  
+          required: true
+          schema:
+            type: integer
+          description: The parcel ID
+        - in: query
+          name: status   
+          required: true
+          schema:
+            type: string
+          description: The status of the parcel
+      responses:
+        "200":
+          description: return the updated parcel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateParcelResponse"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"      
+          
+          
+          
+          
+         
+            
+  /parcels/{orderId}:
+    get:
+      summary: get an order by id
+      parameters:
+        - in: path
+          name: orderId  
+          required: true
+          schema:
+            type: integer
+          description: The order ID
+      responses:
+        "200":
+          description: return all the parcels of the order
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CreateParcelResponse"
+                  
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+          
+          
+          
+          
+  /payments:
+    post:
+      summary: Create payment for an order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentData"
+            example: 
+              data:
+                orderId: 111
+                method: "Debit Card"
+      responses:
+        "200": 
+          description: payment is created
+          headers:
+            Location: 
+              schema:
+                type: string
+                description: The URI of created payment
+                example: "payments/1"
+          content:
+            application/json: 
+              schema:
+                $ref: "#/components/schemas/CreatePaymentResponse"
+        "400":
+          $ref: "#/components/responses/400"   
+
+
+
+
+
+
+components:
+  schemas:
+    UserRegisterRequest:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserData'
+    
+    UserData:
+      type: object
+      properties:
+        userId: 
+          type: integer
+        username:
+          type: string
+          description: user name
+        password:
+          type: string
+          format: password
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dob:
+          type: string
+          format: date
+        
+          
+    CreateUserResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserData'
+          
+    ProductInfo:
+      type: object
+      properties:
+        productId: 
+          type: integer
+        productName: 
+          type: string
+        price:
+          type: number
+        inventory:
+          type: integer
+          
+    ReturnProduct:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ProductInfo'
+          
+    ShoppingCartData:
+      type: object
+      properties:
+        userId: 
+          type: integer
+        productList:
+          type: array
+          items:
+            type: object
+            properties:
+              productId: 
+                type: integer
+              productName: 
+                type: string
+              price:
+                type: number
+              inventory:
+                type: integer
+              account:
+                type: integer
+        postage: 
+          type: number
+    
+    ReturnShoppingCart:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ShoppingCartData'
+    
+          
+    
+    OrderData:
+      type: object
+      properties:
+        orderId:
+          type: integer
+        productList:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductInfo"
+        user:
+          type: object
+          properties:
+            data:
+              $ref: "#/components/schemas/UserData"
+        phoneNumber:
+          type: integer
+        deliveryAddress:
+          type: string
+        billingAddress:
+          type: string
+          
+          
+    CreateOrderResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OrderData'
+        
+        
+    ParcelData:
+      type: object
+      properties:
+        parcelId:
+          type: integer
+        status:
+          type: string
+          enum: ["Received","Processing","Shipped"]
+        orderId:
+          type: integer
+        productList:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductInfo"
+    
+    
+    
+    CreateParcelResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ParcelData'  
+      
+    
+    PaymentData:
+      type: object
+      properties:
+        orderId: 
+          type: integer
+        method:
+          type: string
+          enum: ["Debit Card","Credit Card"]
+    
+    
+    CreatePaymentResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PaymentData'    
+      
+        
+          
+  responses:
+    400:
+      description: bad request
+    404:
+      description: not found
+     
+     
+     
+          
+  
