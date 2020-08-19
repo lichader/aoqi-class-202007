@@ -1,0 +1,389 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "version": "1.0.0",
+    "title": "api-v1",
+    "description": "This API is provided for the user."
+  },
+  "tags": [
+    {
+      "name": "customer",
+      "description": "Everything about customer."
+    },
+    {
+      "name": "product",
+      "description": "Everything about product."
+    },
+    {
+      "name": "order",
+      "description": "Everything about order."
+    },
+    {
+      "name": "payment",
+      "description": "Everything about payment."
+    }
+  ],
+  "paths": {
+    "/customer": {
+      "post": {
+        "summary": "Create customer",
+        "operationId": "updateCustomer",
+        "requestBody": {
+          "description": "Create customer object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createcustomer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Customer is created",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string",
+                  "description": "The URI of created customer",
+                  "example": "/customer/1"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/createcustomerresponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          }
+        }
+      }
+    },
+    "/customer/login": {
+      "get": {
+        "tags": [
+          "customer"
+        ],
+        "summary": "Logs customer into the system",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "The customer name for login",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "The password for login in clear text",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "headers": {
+              "X-Rate-Limit": {
+                "description": "calls per hour allowed by the customer",
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "X-Expires-After": {
+                "description": "date in UTC when token expires",
+                "schema": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            },
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          }
+        }
+      }
+    },
+    "/customer/logout": {
+      "get": {
+        "tags": [
+          "customer"
+        ],
+        "summary": "Logs out current logged in customer session",
+        "responses": {
+          "200": {
+            "description": "The request is successful",
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "description": "Error",
+            "$ref": "#/components/responses/400"
+          }
+        }
+      }
+    },
+    "/product/viewproduct": {
+      "get": {
+        "summary": "View product",
+        "responses": {
+          "200": {
+            "description": "The request is successful",
+            "$ref": "#/components/responses/200"
+          },
+          "default": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    },
+    "/order": {
+      "post": {
+        "summary": "Create an order",
+        "requestBody": {
+          "description": "Create order object",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createorder"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Order is created",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string",
+                  "description": "The URI of created order",
+                  "example": "/order/1"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/createorderresponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Can not create the order",
+            "$ref": "#/components/responses/400"
+          }
+        }
+      }
+    },
+    "/order/track": {
+      "get": {
+        "summary": "track the package",
+        "responses": {
+          "200": {
+            "description": "The request is successful",
+            "$ref": "#/components/schemas/package"
+          },
+          "400": {
+            "description": "Error",
+            "$ref": "#/components/responses/400"
+          }
+        }
+      }
+    },
+    "/payment": {
+      "post": {
+        "summary": "Make a payment",
+        "requestBody": {
+          "description": "Make payment project",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/makepayment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The payment is successful",
+            "$ref": "#/components/responses/200"
+          },
+          "400": {
+            "description": "The payment is fail",
+            "$ref": "#/components/responses/400"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "createcustomer": {
+        "type": "object",
+        "properties": {
+          "customer": {
+            "$ref": "#/components/schemas/customer"
+          }
+        }
+      },
+      "customer": {
+        "type": "object",
+        "properties": {
+          "customerID": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "passward": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "billingAddress": {
+            "type": "string"
+          },
+          "DOB": {
+            "type": "string"
+          }
+        }
+      },
+      "createcustomerresponse": {
+        "type": "object",
+        "properties": {
+          "customer": {
+            "$ref": "#/components/schemas/customer"
+          }
+        }
+      },
+      "productrequest": {
+        "type": "object",
+        "properties": {
+          "product": {
+            "$ref": "#/components/schemas/product"
+          }
+        }
+      },
+      "product": {
+        "type": "object",
+        "properties": {
+          "productID": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "createorder": {
+        "type": "object",
+        "properties": {
+          "order": {
+            "$ref": "#/components/schemas/order"
+          }
+        }
+      },
+      "order": {
+        "type": "object",
+        "properties": {
+          "product": {
+            "$ref": "#/components/schemas/product"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/customer"
+          },
+          "status": {
+            "type": "string",
+            "description": "order Status",
+            "enum": [
+              "recieved",
+              "processing",
+              "shipped"
+            ]
+          },
+          "package": {
+            "$ref": "#/components/schemas/package"
+          }
+        }
+      },
+      "createorderresponse": {
+        "type": "object",
+        "properties": {
+          "order": {
+            "$ref": "#/components/schemas/order"
+          }
+        }
+      },
+      "package": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "order": {
+            "$ref": "#/components/schemas/order"
+          }
+        }
+      },
+      "makepayment": {
+        "type": "object",
+        "properties": {
+          "payment": {
+            "$ref": "#/components/responses/200"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "request succeed"
+      },
+      "400": {
+        "description": "error requrest"
+      }
+    }
+  }
+}
